@@ -3,6 +3,7 @@ Configuration settings for the venue categorization system.
 """
 
 import os
+from pathlib import Path
 from typing import Optional
 from dotenv import load_dotenv
 
@@ -23,7 +24,11 @@ CHAT_MODEL: str = "gpt-4o-mini"
 SERPER_SEARCH_URL: str = "https://google.serper.dev/search"
 
 # File Paths
-PROJECT_ROOT: str = "/Users/jadenfix/reprompt"
+PROJECT_ROOT: str = str(
+    Path(os.getenv("VENUE_PROJECT_ROOT", Path(__file__).resolve().parent))
+    .expanduser()
+    .resolve()
+)
 DATA_DIR: str = f"{PROJECT_ROOT}/data"
 RESULTS_DIR: str = f"{PROJECT_ROOT}/results"
 
