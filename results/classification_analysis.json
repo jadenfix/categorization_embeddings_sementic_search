@@ -1,26 +1,25 @@
 {
   "basic_statistics": {
     "total_venues": 34,
-    "successful_classifications": 34,
-    "failed_classifications": 0,
-    "success_rate": 100.0,
-    "avg_similarity_score": 0.16022340837884344,
-    "median_similarity_score": 0.0,
-    "min_similarity_score": 0.0,
-    "max_similarity_score": 0.5007375183644778,
-    "std_similarity_score": 0.1971642120838206
+    "execution_succeeded": 34,
+    "classified_venues": 17,
+    "abstained_venues": 17,
+    "failed_venues": 0,
+    "execution_success_rate": 100.0,
+    "classification_coverage": 50.0,
+    "avg_similarity_score": 0.39571195112315616,
+    "median_similarity_score": 0.3988263239235764,
+    "min_similarity_score": 0.3183209528602163,
+    "max_similarity_score": 0.4831563428417077,
+    "std_similarity_score": 0.05259742461889892
   },
   "category_distribution": {
     "unique_categories": 12,
     "unique_category_names": 12,
     "most_common_categories": [
       [
-        "None",
-        20
-      ],
-      [
         "Dining and Drinking > Restaurant > Asian Restaurant > Indonesian Restaurant",
-        3
+        5
       ],
       [
         "Dining and Drinking > Restaurant > Asian Restaurant > Indonesian Restaurant > Sundanese Restaurant",
@@ -31,11 +30,11 @@
         1
       ],
       [
-        "Community and Government > Organization > Social Services Organization",
+        "Community and Government > Organization > Charity",
         1
       ],
       [
-        "Business and Professional Services > Office > Corporate Coffee Shop",
+        "Dining and Drinking > Cafe, Coffee, and Tea House > Coffee Shop",
         1
       ],
       [
@@ -51,18 +50,18 @@
         1
       ],
       [
+        "Travel and Transportation > Lodging > Hotel > Hotel Pool",
+        1
+      ],
+      [
         "Retail > Shopping Plaza",
         1
       ]
     ],
     "most_common_category_names": [
       [
-        "None",
-        20
-      ],
-      [
         "Indonesian Restaurant",
-        3
+        5
       ],
       [
         "Sundanese Restaurant",
@@ -73,11 +72,11 @@
         1
       ],
       [
-        "Social Services Organization",
+        "Charity",
         1
       ],
       [
-        "Corporate Coffee Shop",
+        "Coffee Shop",
         1
       ],
       [
@@ -93,135 +92,38 @@
         1
       ],
       [
+        "Hotel Pool",
+        1
+      ],
+      [
         "Shopping Plaza",
         1
       ]
     ],
     "hierarchy_level_distribution": {
-      "4": 5,
-      "5": 4,
+      "4": 8,
+      "5": 3,
       "3": 3,
-      "2": 2
+      "2": 3
     },
-    "category_diversity_index": 0.35294117647058826
+    "category_diversity_index": 0.7058823529411765
   },
   "similarity_distribution": {
     "similarity_distribution": {
-      "0.0-0.2": 20,
       "0.2-0.4": 9,
-      "0.4-0.6": 5,
+      "0.4-0.6": 8,
+      "0.0-0.2": 0,
       "0.6-0.8": 0,
       "0.8-1.0": 0
     },
     "high_confidence_count": 0,
-    "low_confidence_count": 20,
+    "low_confidence_count": 0,
     "high_confidence_percentage": 0.0,
-    "low_confidence_percentage": 58.82352941176471
+    "low_confidence_percentage": 0.0
   },
   "potential_issues": {
     "duplicate_venues": [],
-    "very_low_similarity": [
-      {
-        "name": "Rumah Bersalin Juliana",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Kamal Park",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Toko Mas Asean",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Lembah Tepus",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Hotel Puri Mira Bogor",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Metro Hotel Jababeka",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Sumur JATI SITUS",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Grand Pangrango Hotel",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Milo Mengkel 88",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "OTT Cibubur",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Gedong Alit (GOR & Kafe)",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Griya Mitra Guest House",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Jakaria Kost",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Rey Aquatic Rancabungur",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Brokoli House",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Wardesek Cililitan",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "RTC Terintegrasi Pertamina",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "House of Arsonia Tulip",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Hudji's Home",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      },
-      {
-        "name": "Apotek Fokus Farma",
-        "category_name": NaN,
-        "similarity_score": 0.0
-      }
-    ],
+    "very_low_similarity": [],
     "potential_misclassifications": [],
     "empty_search_results": [
       {
@@ -243,14 +145,14 @@
       {
         "name": "Arsenal Middle School En",
         "address": "3900, 15201 Pittsburgh",
-        "similarity_score": 0.3926035420595123
+        "similarity_score": 0.4068027268241672
       }
     ],
     "Dining and Drinking > Restaurant > Asian Restaurant > Indonesian Restaurant > Sundanese Restaurant": [
       {
         "name": "Tectona Grandis by Siiha",
         "address": "Jl. Katulampa Raya No.113, RT.01/RW.01, Katulampa, Kec. Bogor Timur, Kota Bogor, Jawa Barat 16144",
-        "similarity_score": 0.4339716125898509
+        "similarity_score": 0.4831563428417077
       },
       {
         "name": "Bumi Sampireun",
@@ -258,78 +160,84 @@
         "similarity_score": 0.3988263239235764
       }
     ],
-    "Community and Government > Organization > Social Services Organization": [
+    "Community and Government > Organization > Charity": [
       {
         "name": "Caritasverband Fur Die Stadt Und Den Landkreis Wurzburg De",
         "address": "25, Randersackerer, 97072 Würzburg",
-        "similarity_score": 0.3349909890332324
+        "similarity_score": 0.3389656432154165
       }
     ],
-    "Business and Professional Services > Office > Corporate Coffee Shop": [
+    "Dining and Drinking > Cafe, Coffee, and Tea House > Coffee Shop": [
       {
         "name": "คอฟฟี่ ทูเดย์ Th Coffee Today En TH",
         "address": "ลาดพร้าว, 10310 วังทองหลาง",
-        "similarity_score": 0.3566135060889695
+        "similarity_score": 0.347231644810452
       }
     ],
     "Health and Medicine > Mental Health Service > Psychologist": [
       {
         "name": "Dr Med Silvia Schroter Arztin Fur Psychotherapie De",
         "address": "76, Bender, 40625 Düsseldorf",
-        "similarity_score": 0.3611962195836914
+        "similarity_score": 0.3489873154859194
       }
     ],
     "Community and Government > Education > Primary and Secondary School > Elementary School": [
       {
         "name": "Glendo Elementary En",
         "address": "3rd, 82213 Glendo",
-        "similarity_score": 0.3249576617743064
+        "similarity_score": 0.3225725913929975
       }
     ],
     "Health and Medicine > Medical Center": [
       {
         "name": "Nuview Life Sciences En",
         "address": "1389, Center, 84098 Park City",
-        "similarity_score": 0.3125854373177967
+        "similarity_score": 0.3183209528602163
       }
     ],
-    "NaN": [],
     "Dining and Drinking > Restaurant > Asian Restaurant > Indonesian Restaurant": [
       {
         "name": "Steak Kiloan",
         "address": "Universitas Indonesia, Kantin PSJ UI Pusat Studi Jepang, Jl. Prof. DR. Selo Soemardjan, Pondok Cina, Beji, Kota Depok, Jawa Barat, 16424",
-        "similarity_score": 0.5007375183644778
+        "similarity_score": 0.4768157163276689
+      },
+      {
+        "name": "Bebek Boss 86",
+        "address": "Jl. Akses UI, Tugu, Cimanggis, Kota Depok, Jawa Barat, Indonesia, 16451",
+        "similarity_score": 0.461468720878793
       },
       {
         "name": "Super Daging Tangerang",
         "address": "Jl. Kelapa Puan Raya Blok AG1 No. 5, Pakulonan Barat, Kelapa Dua, Tangerang, Banten, Indonesia, 15810",
-        "similarity_score": 0.4470050189883348
-      },
+        "similarity_score": 0.4331469327642604
+      }
+    ],
+    "Travel and Transportation > Lodging > Hotel > Hotel Pool": [
       {
-        "name": "Martabak Hokky",
-        "address": "Ruko The Modern Arcade, Blok B, Jl. Hartono Raya No.7, RT.003/RW.006, Kelapa Indah, Kec. Tangerang, Banten 15117, Indonesia",
-        "similarity_score": 0.4188801139442191
+        "name": "Hotel Puri Mira Bogor",
+        "address": "Jl. Raya Tajur No.225, RT.03/RW.03, Muarasari, Bogor Selatan, Kota Bogor, Jawa Barat, Indonesia, 16137",
+        "similarity_score": 0.3925433005956454
       }
     ],
     "Retail > Shopping Plaza": [
       {
         "name": "Duta Harapan Indah Blok UU No. 45",
         "address": "Ruko Duta Harapan Indah Residence Block Uu No. 45, Kapuk Muara, Penjaringan, Kota Jakarta Utara, DKI Jakarta, Indonesia, 14460",
-        "similarity_score": 0.3710144259140494
+        "similarity_score": 0.3748140654273636
       }
     ],
-    "Dining and Drinking > Restaurant > Asian Restaurant > Indonesian Restaurant > Javanese Restaurant": [
-      {
-        "name": "Bebek Boss 86",
-        "address": "Jl. Akses UI, Tugu, Cimanggis, Kota Depok, Jawa Barat, Indonesia, 16451",
-        "similarity_score": 0.3661175845744295
-      }
-    ],
-    "Dining and Drinking > Restaurant > Asian Restaurant > Indonesian Restaurant > Balinese Restaurant": [
+    "Dining and Drinking > Restaurant > Asian Restaurant > Indonesian Restaurant > Betawinese Restaurant": [
       {
         "name": "Seblak Bandung Pocin",
         "address": "Jl. Stasiun Pondok Cina, Pondok Cina, Beji, Kota Depok, Jawa Barat, Indonesia, 16424",
-        "similarity_score": 0.4280959307242303
+        "similarity_score": 0.4351809771193953
+      }
+    ],
+    "Retail > Pharmacy": [
+      {
+        "name": "Apotek Fokus Farma",
+        "address": "Jl. Permata No.188C, Curug, Gunung Sindur, Bogor, Jawa Barat, Indonesia, 16340",
+        "similarity_score": 0.3545825749686555
       }
     ]
   }

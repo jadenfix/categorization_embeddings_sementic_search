@@ -4,11 +4,16 @@ Complete venue classification pipeline for all venues in the dataset.
 Processes all venues with semantic search and LLM fallback, then saves comprehensive results.
 """
 
-import logging
+import sys
 import pandas as pd
-from typing import Dict, List, Any
+from typing import Any, Dict
 
-from config import CATEGORY_EMBEDDINGS_BASE, NUMPY_EXTENSION, METADATA_EXTENSION
+from config import (
+    CATEGORY_EMBEDDINGS_BASE,
+    METADATA_EXTENSION,
+    NUMPY_EXTENSION,
+    validate_config,
+)
 from core.embedding_generator import EmbeddingGenerator
 from core.search_client import SearchClient
 from core.category_matcher import CategoryMatcher
@@ -107,6 +112,12 @@ def classify_venue(venue_data: Dict[str, str], components: Dict) -> Dict[str, An
 def process_all_venues():
     """Process all venues from the data CSV file."""
     logger.info("Starting complete venue classification pipeline...")
+
+    try:
+        validate_config()
+    except ValueError as exc:
+        logger.error("Configuration error: %s", exc)
+        return {"error": str(exc)}
     
     # Load venue data
     venues_df = DataLoader.load_csv_data('data/foursquare_categories - data.csv')
@@ -159,11 +170,27 @@ def process_all_venues():
     logger.info("Applying LLM fallback to 'None' classifications...")
     final_results = apply_llm_fallback_to_results(results, all_categories)
     
-    # Calculate statistics
+    # Report execution and categorization as separate outcomes. Successful
+    # execution does not imply that the selector returned a category.
     total_venues = len(final_results)
-    successful_venues = len([r for r in final_results if r['category_label'] != 'None'])
-    none_venues = total_venues - successful_venues
-    success_rate = (successful_venues / total_venues) * 100
+    execution_succeeded = len(
+        [r for r in final_results if str(r.get('status', '')).casefold() == 'success']
+    )
+    abstention_tokens = {'', 'none', 'null', 'unknown'}
+    classified_venues = len(
+        [
+            r
+            for r in final_results
+            if str(r.get('status', '')).casefold() == 'success'
+            and str(r.get('category_label') or '').strip().casefold()
+            not in abstention_tokens
+        ]
+    )
+    abstained_venues = execution_succeeded - classified_venues
+    failed_venues = total_venues - execution_succeeded
+    classification_coverage = (
+        classified_venues / total_venues * 100 if total_venues else 0.0
+    )
     
     fallback_reclassified = len([r for r in final_results if r.get('fallback_status') == 'llm_reclassified'])
     fallback_no_match = len([r for r in final_results if r.get('fallback_status') == 'llm_no_match'])
@@ -188,17 +215,21 @@ def process_all_venues():
     logger.info("COMPLETE VENUE CLASSIFICATION SUMMARY")
     logger.info("="*60)
     logger.info(f"Total venues processed: {total_venues}")
-    logger.info(f"Successfully classified: {successful_venues}")
-    logger.info(f"None classifications: {none_venues}")
-    logger.info(f"Final success rate: {success_rate:.1f}%")
+    logger.info(f"Execution succeeded: {execution_succeeded}")
+    logger.info(f"Classified: {classified_venues}")
+    logger.info(f"Abstained: {abstained_venues}")
+    logger.info(f"Failed: {failed_venues}")
+    logger.info(f"Observed classification coverage: {classification_coverage:.1f}%")
     logger.info(f"LLM fallback reclassified: {fallback_reclassified}")
     logger.info(f"LLM fallback no match: {fallback_no_match}")
     
     return {
         'total_venues': total_venues,
-        'successful_venues': successful_venues,
-        'none_venues': none_venues,
-        'success_rate': success_rate,
+        'execution_succeeded': execution_succeeded,
+        'classified_venues': classified_venues,
+        'abstained_venues': abstained_venues,
+        'failed_venues': failed_venues,
+        'classification_coverage': classification_coverage,
         'fallback_reclassified': fallback_reclassified,
         'fallback_no_match': fallback_no_match,
         'output_file': output_file,
@@ -210,4 +241,5 @@ def main():
     return process_all_venues()
 
 if __name__ == "__main__":
-    main()
+    result = main()
+    sys.exit(1 if result.get('error') else 0)

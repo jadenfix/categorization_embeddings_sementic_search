@@ -1,0 +1,34 @@
+name: verify
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  provider-free-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install provider-free test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          python -m pip install --upgrade pip
+          python -m pip install pandas numpy openai requests scikit-learn python-dotenv pytest pillow
+      - name: Run regressions
+        run: python -m pytest -q
+      - name: Replay checked-in historical analysis
+        run: |
+          python cli/analyze_results.py
+          git diff --exit-code -- results/classification_analysis.json
+      - name: Verify demo provenance and media
+        run: python scripts/verify_demo.py
