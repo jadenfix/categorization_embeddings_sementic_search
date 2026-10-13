@@ -251,3 +251,19 @@ export LOG_LEVEL="INFO"
 - Maintainable: Clean code architecture with comprehensive documentation
 
 Ready for enterprise-scale venue classification with exceptional accuracy and reliability.
+## Portable local configuration
+
+Data and results paths resolve from this checkout rather than a developer's
+absolute home path. `OPENAI_API_KEY` is supported, with `OPEN_AI_API_KEY` retained
+as a legacy alias. `SERPER_KEY` configures search enrichment.
+
+Run local file-loading and candidate-ranking checks without credentials or
+external requests:
+
+```sh
+python -m pytest -q tests/test_local_pipeline.py
+```
+
+These checks validate the local pipeline components. The historical performance
+numbers above do not establish accuracy on new venues; live embedding, search,
+and LLM classification still require service credentials and separate validation.

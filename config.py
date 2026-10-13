@@ -3,6 +3,7 @@ Configuration settings for the venue categorization system.
 """
 
 import os
+from pathlib import Path
 from typing import Optional
 from dotenv import load_dotenv
 
@@ -10,8 +11,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # API Configuration
-OPENAI_API_KEY: Optional[str] = os.getenv('OPEN_AI_API_KEY')
-SERPER_API_KEY: Optional[str] = os.getenv('SERPER_KEY')
+OPENAI_API_KEY: Optional[str] = os.getenv('OPENAI_API_KEY') or os.getenv('OPEN_AI_API_KEY')
+SERPER_API_KEY: Optional[str] = os.getenv('SERPER_API_KEY') or os.getenv('SERPER_KEY')
 
 # Model Configuration
 EMBEDDING_MODEL: str = "text-embedding-3-small"
@@ -23,7 +24,7 @@ CHAT_MODEL: str = "gpt-4o-mini"
 SERPER_SEARCH_URL: str = "https://google.serper.dev/search"
 
 # File Paths
-PROJECT_ROOT: str = "/Users/jadenfix/reprompt"
+PROJECT_ROOT: str = str(Path(os.getenv("VENUE_PROJECT_ROOT", Path(__file__).resolve().parent)).expanduser().resolve())
 DATA_DIR: str = f"{PROJECT_ROOT}/data"
 RESULTS_DIR: str = f"{PROJECT_ROOT}/results"
 
@@ -51,9 +52,9 @@ LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 def validate_config() -> None:
     """Validate that required configuration is present."""
     if not OPENAI_API_KEY:
-        raise ValueError("OPEN_AI_API_KEY environment variable is required")
+        raise ValueError("OPENAI_API_KEY environment variable is required")
     if not SERPER_API_KEY:
-        raise ValueError("SERPER_KEY environment variable is required")
+        raise ValueError("SERPER_API_KEY environment variable is required")
 
 # File extensions
 NUMPY_EXTENSION: str = "_embeddings.npy"
