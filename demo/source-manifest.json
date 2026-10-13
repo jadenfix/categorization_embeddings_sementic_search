@@ -1,0 +1,12 @@
+{
+  "source_commit": "8e578f24cefa6f82a02f44f8937476a3032acda7",
+  "source_tree": "2ec8e1b29e0f4b7653e2c6b8472bbc7ed5652ff1",
+  "runtime_inputs": {
+    "cli/analyze_results.py": "d88d56312e34767dd3bf993620bf8c92d13287d8",
+    "config.py": "bb3b529f7918fc78ddbc9235536f2d31597d5037",
+    "results/venue_category_matches.csv": "002829cc27f4d4cd8642735189e41caa2e90850b",
+    "utils/data_loader.py": "c962455a948ee29cfb13d749ccaee62037b4b1ee",
+    "utils/file_manager.py": "8989ba75285f1ae3feac59ee8000da3c58d55eb8",
+    "utils/logger_config.py": "232e94248a0e0ecc85ecc07714178554d32fcbf0"
+  }
+}

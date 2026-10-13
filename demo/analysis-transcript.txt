@@ -1,0 +1,8 @@
+# Sanitized lines from: python cli/analyze_results.py
+Analyzing 34 rows: 17 classified, 17 abstained, 0 failed
+Execution succeeded: 34
+Classified: 17
+Abstained: 17
+Failed: 0
+Observed classification coverage: 50.00%
+Results analysis completed successfully!

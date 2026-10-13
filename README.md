@@ -27,6 +27,18 @@ These are descriptive observations about a saved historical run. The dataset has
 no ground-truth labels, so it cannot establish precision, accuracy, provider
 quality, current live behavior, or production performance.
 
+### Actual provider-free demo
+
+![Terminal audit of the checked-in 34-row historical result](demo/venue-result-integrity.gif)
+
+[Watch the H.264 MP4](demo/venue-result-integrity.mp4) ·
+[Inspect the capture receipt](demo/capture.json) ·
+[Verify source provenance](demo/source-manifest.json)
+
+The animation is rendered from an actual `python cli/analyze_results.py` replay
+at the source commit recorded in the receipt. It depicts the saved historical
+result only; it does not call providers or claim model quality.
+
 ## Quick Start
 
 ### Prerequisites

@@ -1,0 +1,33 @@
+{
+  "format_version": 1,
+  "scope": "checked-in historical result analysis",
+  "source_commit": "8e578f24cefa6f82a02f44f8937476a3032acda7",
+  "source_tree": "2ec8e1b29e0f4b7653e2c6b8472bbc7ed5652ff1",
+  "command": "python cli/analyze_results.py",
+  "input": {
+    "path": "results/venue_category_matches.csv",
+    "rows": 34,
+    "sha256": "62303cd6d84b649a54a8776d6c4665a1d11e1296968e3d76948ccd3368688ef7"
+  },
+  "observed": {
+    "total_venues": 34,
+    "execution_succeeded": 34,
+    "classified_venues": 17,
+    "abstained_venues": 17,
+    "failed_venues": 0,
+    "execution_success_rate": 100.0,
+    "classification_coverage": 50.0
+  },
+  "sentinel_policy": [
+    "null",
+    "None",
+    "Unknown",
+    "blank"
+  ],
+  "limitations": [
+    "historical checked-in output",
+    "no provider calls during replay",
+    "no ground-truth labels",
+    "no accuracy, precision, provider-quality, or production-performance claim"
+  ]
+}
