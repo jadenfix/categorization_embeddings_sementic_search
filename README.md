@@ -1,6 +1,8 @@
 # categorization_embeddings_sementic_search
 
-A production-ready venue classification system that combines OpenAI embeddings, semantic search, and intelligent category selection to accurately categorize venues using the Foursquare taxonomy.
+A venue-classification prototype combining OpenAI embeddings, semantic search,
+and category selection against the Foursquare taxonomy. The repository includes
+a historical 34-row result set that can be audited locally without provider keys.
 
 ## System Overview
 
@@ -11,22 +13,19 @@ This system processes venue data (name, address) and intelligently assigns the m
 - OpenAI GPT-4 for intelligent final category selection
 - Comprehensive LLM fallback mechanisms for robust error handling
 
-## Final System Performance
+## Checked-in historical result
 
-### Production Metrics (34 venues processed)
-- **Processing Success Rate**: 100% (34/34 venues classified)
-- **Classification Precision**: 100% (zero false positives)
-- **LLM Fallback Usage**: 55.9% (19/34 venues required advanced processing)
-- **Direct Similarity Matching**: 44.1% (15/34 venues classified without LLM)
-- **Processing Speed**: 2-3 venues per minute
-- **Supported Categories**: 1,245 Foursquare categories
-- **Multilingual Support**: Global venue data (English, Indonesian, German, Thai, etc.)
+Running `python cli/analyze_results.py` against the checked-in
+`results/venue_category_matches.csv` reports:
 
-### Quality Assurance
-- Conservative Classification: Prefers accurate categorization over speed
-- Semantic Intelligence: Accurate classification despite varying similarity scores
-- Robust Fallback System: Multiple layers of error handling and recovery
-- Real-world Validation: Search-enhanced context for accurate decisions
+- **34/34 executions completed**
+- **17/34 rows contain a category** (50% observed coverage)
+- **17/34 rows are explicit abstentions**
+- **0 execution failures**
+
+These are descriptive observations about a saved historical run. The dataset has
+no ground-truth labels, so it cannot establish precision, accuracy, provider
+quality, current live behavior, or production performance.
 
 ## Quick Start
 
@@ -59,7 +58,7 @@ Output: `results/complete_venue_classification_results.csv` (classification resu
 ```bash
 python cli/analyze_results.py
 ```
-Output: Comprehensive accuracy and performance analysis
+Output: execution status, observed classification coverage, and descriptive distributions
 
 #### 4. Test System Components
 ```bash
@@ -90,17 +89,17 @@ Venue Data → Search Enrichment → Generate Embedding → Find Top-4 Candidate
 #### Intelligent Category Selector
 - **Purpose**: OpenAI-powered semantic category selection
 - **Features**: Context-aware prompts, response validation, fallback handling
-- **Accuracy**: 100% precision with conservative approach
+- **Behavior**: returns a candidate label or an explicit abstention
 
 #### Search Client
 - **Purpose**: Enrich venue data with real-world business information
 - **Features**: Query optimization, result caching, snippet extraction
-- **Coverage**: Global venue search with multilingual support
+- **Input**: venue queries sent to the configured search provider
 
 #### Category Matcher
 - **Purpose**: Efficient similarity-based candidate selection
 - **Features**: Cosine similarity computation, top-k selection, memory optimization
-- **Performance**: Sub-second matching across 1,245 categories
+- **Behavior**: ranks the checked-in taxonomy by cosine similarity
 
 #### Embedding Generator
 - **Purpose**: Generate OpenAI embeddings with caching and retry logic
@@ -218,7 +217,7 @@ API_DELAY_SECONDS = 0.5                     # Current rate limiting
 #### Level 3: LLM Fallback Processing
 - Pattern Recognition: Indonesian business terms, common venue types
 - Multi-stage Classification: Progressive refinement of categories
-- Conservative Approach: Prefer accuracy over speed
+- Conservative Approach: Allow explicit abstention instead of forcing a category
 
 #### Level 4: System Recovery
 - Partial Failures: Continue processing remaining venues
@@ -230,27 +229,26 @@ API_DELAY_SECONDS = 0.5                     # Current rate limiting
 ### Environment Setup
 ```bash
 # Production environment
-export OPEN_AI_API_KEY="your_production_key"
+export OPENAI_API_KEY="your_provider_key"
 export SERPER_API_KEY="your_production_key"
 export LOG_LEVEL="INFO"
 ```
 
-### Monitoring and Performance
-- Success Rate Monitoring: Track classification success rates
+### Monitoring and reporting
+- Execution status: track completed and failed processing separately
+- Classification coverage: track classified and abstained rows separately
 - API Usage Tracking: Monitor API call volumes and costs
 - Error Rate Alerting: Automated alerts for system issues
-- Processing Metrics: Speed and resource usage monitoring
+- Runtime measurements: establish them in the target deployment before claiming performance
 
 ## System Highlights
 
-- Production-Ready: Robust error handling and comprehensive testing
-- High Accuracy: 100% success rate with intelligent conservative approach
-- Scalable Architecture: Handles datasets efficiently with fallback systems
-- Global Support: Multilingual venue processing capability
+- Explicit abstention: missing/sentinel categories are not counted as classifications
+- Honest analysis: category and similarity distributions use classified rows only
+- Provider boundary: live classification requires separately configured credentials
 - Cost-Effective: Optimized API usage and caching strategies
 - Maintainable: Clean code architecture with comprehensive documentation
 
-Ready for enterprise-scale venue classification with exceptional accuracy and reliability.
 ## Portable local configuration
 
 Data and results paths resolve from this checkout rather than a developer's
@@ -264,6 +262,14 @@ external requests:
 python -m pytest -q tests/test_local_pipeline.py
 ```
 
-These checks validate the local pipeline components. The historical performance
-numbers above do not establish accuracy on new venues; live embedding, search,
-and LLM classification still require service credentials and separate validation.
+Run the complete provider-free regression suite and regenerate the historical
+analysis with:
+
+```sh
+python -m pytest -q
+python cli/analyze_results.py
+```
+
+These checks validate local pipeline components and saved-result accounting.
+Live embedding, search, and LLM classification require service credentials and
+separate validation.

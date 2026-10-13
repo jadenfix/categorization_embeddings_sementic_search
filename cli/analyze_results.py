@@ -4,11 +4,9 @@ CLI script for analyzing venue classification results.
 """
 
 import sys
-import logging
 import pandas as pd
-import numpy as np
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any
 from collections import Counter
 
 # Add project root to path
@@ -36,12 +34,34 @@ class ResultsAnalyzer:
         self.results_df = results_df
         self.logger = get_logger(__name__)
         
-        # Filter successful results for analysis
-        self.successful_results = results_df[
-            results_df['status'] == 'success'
-        ] if 'status' in results_df.columns else results_df
-        
-        self.logger.info(f"Analyzing {len(self.successful_results)} successful classifications")
+        # Execution and classification are different outcomes. A provider call can
+        # complete successfully while the selector correctly abstains.
+        if 'status' in results_df.columns:
+            execution_succeeded = (
+                results_df['status'].fillna('').astype(str).str.strip().str.casefold()
+                == 'success'
+            )
+        else:
+            # Preserve compatibility with older result exports that predate status.
+            execution_succeeded = pd.Series(True, index=results_df.index)
+
+        category_labels = results_df['category_label'] if 'category_label' in results_df.columns else pd.Series(None, index=results_df.index)
+        abstention_tokens = {'', 'none', 'null', 'unknown'}
+        normalized_labels = category_labels.fillna('').astype(str).str.strip().str.casefold()
+        has_category = ~normalized_labels.isin(abstention_tokens)
+
+        self.execution_succeeded_results = results_df[execution_succeeded].copy()
+        self.classified_results = results_df[execution_succeeded & has_category].copy()
+        self.abstained_results = results_df[execution_succeeded & ~has_category].copy()
+        self.failed_results = results_df[~execution_succeeded].copy()
+
+        self.logger.info(
+            "Analyzing %d rows: %d classified, %d abstained, %d failed",
+            len(results_df),
+            len(self.classified_results),
+            len(self.abstained_results),
+            len(self.failed_results),
+        )
     
     def calculate_basic_statistics(self) -> Dict[str, Any]:
         """
@@ -50,15 +70,27 @@ class ResultsAnalyzer:
         Returns:
             Dictionary with basic statistics
         """
+        total = len(self.results_df)
+        executed = len(self.execution_succeeded_results)
+        classified = len(self.classified_results)
         stats = {
-            'total_venues': len(self.results_df),
-            'successful_classifications': len(self.successful_results),
-            'failed_classifications': len(self.results_df) - len(self.successful_results),
-            'success_rate': len(self.successful_results) / len(self.results_df) * 100,
+            'total_venues': total,
+            'execution_succeeded': executed,
+            'classified_venues': classified,
+            'abstained_venues': len(self.abstained_results),
+            'failed_venues': len(self.failed_results),
+            'execution_success_rate': executed / total * 100 if total else 0.0,
+            'classification_coverage': classified / total * 100 if total else 0.0,
         }
         
-        if len(self.successful_results) > 0:
-            similarity_scores = self.successful_results['similarity_score']
+        if classified > 0:
+            similarity_scores = pd.to_numeric(
+                self.classified_results['similarity_score'], errors='coerce'
+            ).dropna()
+        else:
+            similarity_scores = pd.Series(dtype=float)
+
+        if len(similarity_scores) > 0:
             stats.update({
                 'avg_similarity_score': float(similarity_scores.mean()),
                 'median_similarity_score': float(similarity_scores.median()),
@@ -76,12 +108,12 @@ class ResultsAnalyzer:
         Returns:
             Dictionary with category distribution analysis
         """
-        if len(self.successful_results) == 0:
-            return {'error': 'No successful results to analyze'}
+        if len(self.classified_results) == 0:
+            return {'error': 'No classified results to analyze'}
         
         # Count categories (filter out NaN values)
-        category_labels = self.successful_results['category_label'].fillna('None').tolist()
-        category_names = self.successful_results['category_name'].fillna('None').tolist()
+        category_labels = self.classified_results['category_label'].tolist()
+        category_names = self.classified_results['category_name'].fillna('Unnamed').tolist()
         
         category_counts = Counter(category_labels)
         category_name_counts = Counter(category_names)
@@ -99,7 +131,7 @@ class ResultsAnalyzer:
             'most_common_categories': category_counts.most_common(10),
             'most_common_category_names': category_name_counts.most_common(10),
             'hierarchy_level_distribution': hierarchy_levels,
-            'category_diversity_index': len(category_counts) / len(self.successful_results)
+            'category_diversity_index': len(category_counts) / len(self.classified_results)
         }
     
     def analyze_similarity_distribution(self) -> Dict[str, Any]:
@@ -109,10 +141,14 @@ class ResultsAnalyzer:
         Returns:
             Dictionary with similarity distribution analysis
         """
-        if len(self.successful_results) == 0:
-            return {'error': 'No successful results to analyze'}
+        if len(self.classified_results) == 0:
+            return {'error': 'No classified results to analyze'}
         
-        similarity_scores = self.successful_results['similarity_score']
+        similarity_scores = pd.to_numeric(
+            self.classified_results['similarity_score'], errors='coerce'
+        ).dropna()
+        if len(similarity_scores) == 0:
+            return {'error': 'No numeric similarity scores for classified results'}
         
         # Create similarity score bins
         bins = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
@@ -122,15 +158,15 @@ class ResultsAnalyzer:
         bin_counts = binned_scores.value_counts().to_dict()
         
         # Find high and low confidence classifications
-        high_confidence = self.successful_results[similarity_scores >= 0.7]
-        low_confidence = self.successful_results[similarity_scores < 0.3]
+        high_confidence_count = int((similarity_scores >= 0.7).sum())
+        low_confidence_count = int((similarity_scores < 0.3).sum())
         
         return {
             'similarity_distribution': bin_counts,
-            'high_confidence_count': len(high_confidence),
-            'low_confidence_count': len(low_confidence),
-            'high_confidence_percentage': len(high_confidence) / len(self.successful_results) * 100,
-            'low_confidence_percentage': len(low_confidence) / len(self.successful_results) * 100,
+            'high_confidence_count': high_confidence_count,
+            'low_confidence_count': low_confidence_count,
+            'high_confidence_percentage': high_confidence_count / len(similarity_scores) * 100,
+            'low_confidence_percentage': low_confidence_count / len(similarity_scores) * 100,
         }
     
     def find_potential_issues(self) -> Dict[str, Any]:
@@ -147,24 +183,24 @@ class ResultsAnalyzer:
             'empty_search_results': []
         }
         
-        if len(self.successful_results) == 0:
+        if len(self.execution_succeeded_results) == 0:
             return issues
         
         # Find duplicate venues (same name and address)
-        duplicates = self.successful_results.groupby(['name', 'address']).size()
+        duplicates = self.execution_succeeded_results.groupby(['name', 'address']).size()
         duplicate_venues = duplicates[duplicates > 1].index.tolist()
         issues['duplicate_venues'] = [f"{name} - {address}" for name, address in duplicate_venues]
         
         # Find very low similarity scores
-        very_low_similarity = self.successful_results[
-            self.successful_results['similarity_score'] < 0.2
+        very_low_similarity = self.classified_results[
+            self.classified_results['similarity_score'] < 0.2
         ]
         issues['very_low_similarity'] = very_low_similarity[['name', 'category_name', 'similarity_score']].to_dict('records')
         
         # Find potential search issues
-        if 'enriched_text' in self.successful_results.columns:
-            empty_search = self.successful_results[
-                self.successful_results['enriched_text'].str.contains('No search results found|Search failed', na=False)
+        if 'enriched_text' in self.execution_succeeded_results.columns:
+            empty_search = self.execution_succeeded_results[
+                self.execution_succeeded_results['enriched_text'].str.contains('No search results found|Search failed', na=False)
             ]
             issues['empty_search_results'] = empty_search[['name', 'address']].to_dict('records')
         
@@ -180,14 +216,14 @@ class ResultsAnalyzer:
         Returns:
             Dictionary with top matches by category
         """
-        if len(self.successful_results) == 0:
+        if len(self.classified_results) == 0:
             return {}
         
         top_matches = {}
         
-        for category in self.successful_results['category_label'].unique():
-            category_results = self.successful_results[
-                self.successful_results['category_label'] == category
+        for category in self.classified_results['category_label'].unique():
+            category_results = self.classified_results[
+                self.classified_results['category_label'] == category
             ].nlargest(top_n, 'similarity_score')
             
             top_matches[category] = category_results[
@@ -215,9 +251,12 @@ def print_analysis_report(analyzer: ResultsAnalyzer) -> None:
     logger.info("\n📊 BASIC STATISTICS")
     logger.info("-" * 40)
     logger.info(f"Total venues: {stats['total_venues']}")
-    logger.info(f"Successful classifications: {stats['successful_classifications']}")
-    logger.info(f"Failed classifications: {stats['failed_classifications']}")
-    logger.info(f"Success rate: {stats['success_rate']:.2f}%")
+    logger.info(f"Execution succeeded: {stats['execution_succeeded']}")
+    logger.info(f"Classified: {stats['classified_venues']}")
+    logger.info(f"Abstained: {stats['abstained_venues']}")
+    logger.info(f"Failed: {stats['failed_venues']}")
+    logger.info(f"Execution success rate: {stats['execution_success_rate']:.2f}%")
+    logger.info(f"Observed classification coverage: {stats['classification_coverage']:.2f}%")
     
     if 'avg_similarity_score' in stats:
         logger.info(f"Average similarity score: {stats['avg_similarity_score']:.4f}")
