@@ -3,6 +3,7 @@ Configuration settings for the venue categorization system.
 """
 
 import os
+from pathlib import Path
 from typing import Optional
 from dotenv import load_dotenv
 
@@ -10,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # API Configuration
-OPENAI_API_KEY: Optional[str] = os.getenv('OPEN_AI_API_KEY')
+OPENAI_API_KEY: Optional[str] = os.getenv('OPENAI_API_KEY') or os.getenv('OPEN_AI_API_KEY')
 SERPER_API_KEY: Optional[str] = os.getenv('SERPER_KEY')
 
 # Model Configuration
@@ -23,7 +24,7 @@ CHAT_MODEL: str = "gpt-4o-mini"
 SERPER_SEARCH_URL: str = "https://google.serper.dev/search"
 
 # File Paths
-PROJECT_ROOT: str = "/Users/jadenfix/reprompt"
+PROJECT_ROOT: str = str(Path(__file__).resolve().parent)
 DATA_DIR: str = f"{PROJECT_ROOT}/data"
 RESULTS_DIR: str = f"{PROJECT_ROOT}/results"
 
